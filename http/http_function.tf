@@ -1,24 +1,8 @@
-locals {
+module "source_file" {
+  source = "../_modules/arquive_file"
+
+  function_path = var.function_path
   function_name = var.function_name
-  root_dir      = abspath("../../")
-}
-
-resource "random_string" "random" {
-  length  = 4
-  special = false
-}
-
-data "archive_file" "zip" {
-  type        = "zip"
-  source_dir  = "${local.root_dir}/src/functions/${var.function_path}"
-  output_path = "${local.root_dir}/assets/${local.function_name}-${random_string.random.result}.zip"
-  excludes    = ["node_modules"]
-}
-
-resource "google_storage_bucket_object" "archive" {
-  name   = "functions/${var.function_name}-${random_string.random.result}.zip"
-  bucket = var.bucket_name
-  source = "${local.root_dir}/assets/${local.function_name}-${random_string.random.result}.zip"
 }
 
 resource "google_cloudfunctions_function" "http" {
@@ -33,10 +17,10 @@ resource "google_cloudfunctions_function" "http" {
   available_memory_mb = var.available_memory_mb
 
   source_archive_bucket = var.bucket_name
-  source_archive_object = google_storage_bucket_object.archive.name
+  source_archive_object = source_file.function_zip_source_name
 
   labels = {
-    output_sha = data.archive_file.zip.output_sha
+    output_sha = source_file.output_sha
     deploy     = "terraform"
   }
 
@@ -49,12 +33,12 @@ resource "google_cloudfunctions_function" "http" {
   service_account_email = var.service_account_email
 
   lifecycle {
-    replace_triggered_by = [google_storage_bucket_object.archive]
+    replace_triggered_by = [source_file.function_archive]
   }
 }
 
 output "function_name" {
-  value = local.function_name
+  value = var.function_name
 }
 
 output "function_endpoint_url" {
