@@ -40,7 +40,7 @@ resource "google_cloudfunctions_function" "pubsub" {
   service_account_email = var.service_account_email
 
   lifecycle {
-    replace_triggered_by = [module.source_file.arquive]
+    replace_triggered_by = [source_file.function_archive]
   }
 }
 

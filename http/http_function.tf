@@ -34,7 +34,7 @@ resource "google_cloudfunctions_function" "http" {
   service_account_email = var.service_account_email
 
   lifecycle {
-    replace_triggered_by = [module.source_file.function_archive]
+    replace_triggered_by = [source_file.function_archive]
   }
 }
 
