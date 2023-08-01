@@ -3,7 +3,7 @@ module "source_file" {
 
   function_path = var.function_path
   function_name = var.function_name
-  bucket_name = var.bucket_name
+  bucket_name   = var.bucket_name
 }
 
 resource "google_cloudfunctions_function" "http_unauth" {
@@ -18,10 +18,10 @@ resource "google_cloudfunctions_function" "http_unauth" {
   available_memory_mb = var.available_memory_mb
 
   source_archive_bucket = var.bucket_name
-  source_archive_object = source_file.function_zip_source_name
+  source_archive_object = module.source_file.function_zip_source_name
 
   labels = {
-    output_sha = source_file.output_sha
+    output_sha = module.source_file.output_sha
     deploy     = "terraform"
   }
 
@@ -34,7 +34,7 @@ resource "google_cloudfunctions_function" "http_unauth" {
   service_account_email = var.service_account_email
 
   lifecycle {
-    replace_triggered_by = [source_file.arquive]
+    replace_triggered_by = [module.source_file.arquive]
   }
 }
 
