@@ -3,6 +3,7 @@ module "source_file" {
 
   function_path = var.function_path
   function_name = var.function_name
+  bucket_name   = var.source_bucket_name
 }
 
 resource "google_cloudfunctions_function" "http" {
