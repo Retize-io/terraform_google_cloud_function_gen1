@@ -8,7 +8,7 @@ You can use this module by referencing it in your Terraform code:
 
 ```terraform
 module "deploy_function" {
-source  = "git@github.com:Retize-io/terraform_google_cloud_function_gen1.git//http/rg?ref=v1.0.0"
+source  = "git@github.com:Retize-io/terraform_google_cloud_function_gen1.git//http/rg?ref=v1.1.0"
 
   project                = "my-project"
   function_name          = "my-function"
