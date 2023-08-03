@@ -6,6 +6,22 @@ module "source_file" {
   bucket_name   = var.bucket_name
 }
 
+data "external" "git" {
+  program = [
+    "git",
+    "log",
+    "--pretty=format:{ \"sha\": \"%H\" }",
+    "-1",
+    "HEAD"
+  ]
+}
+
+resource "null_resource" "trigger" {
+  triggers = {
+    function_archive = data.external.git.result.sha
+  }
+}
+
 resource "google_cloudfunctions_function" "http_unauth" {
   # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloudfunctions_function#argument-reference
 
@@ -34,7 +50,7 @@ resource "google_cloudfunctions_function" "http_unauth" {
   service_account_email = var.service_account_email
 
   lifecycle {
-    replace_triggered_by = [source_file.function_archive]
+    replace_triggered_by = [null_resource.trigger]
   }
 }
 
